@@ -24,6 +24,23 @@ import {
   TableRow,
 } from "./ui/table";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import {
   Settings,
   BarChart3,
   Users,
@@ -50,35 +67,10 @@ import {
 } from "recharts";
 
 const AdminPanel = () => {
-  const [activeTab, setActiveTab] = useState("dashboard");
-
-  const stats = [
-    { title: "Toplam Kullanıcı", value: "1,234", change: "+12%" },
-    { title: "Aylık Gelir", value: "₺45,678", change: "+8%" },
-    { title: "Aktif Denemeler", value: "89", change: "+23%" },
-    { title: "Tamamlanan Analizler", value: "456", change: "+15%" },
-  ];
-
-  const revenueData = [
-    { month: "Ocak", revenue: 25000, target: 30000 },
-    { month: "Şubat", revenue: 28000, target: 32000 },
-    { month: "Mart", revenue: 35000, target: 38000 },
-    { month: "Nisan", revenue: 42000, target: 40000 },
-    { month: "Mayıs", revenue: 38000, target: 42000 },
-    { month: "Haziran", revenue: 45000, target: 48000 },
-  ];
-
-  const userActivityData = [
-    { day: "Pzt", users: 120, tryons: 85 },
-    { day: "Sal", users: 145, tryons: 102 },
-    { day: "Çar", users: 165, tryons: 118 },
-    { day: "Per", users: 180, tryons: 135 },
-    { day: "Cum", users: 195, tryons: 145 },
-    { day: "Cmt", users: 210, tryons: 168 },
-    { day: "Paz", users: 155, tryons: 125 },
-  ];
-
-  const recentUsers = [
+  // ...activeTab kaldırıldı
+  const [editingUser, setEditingUser] = useState(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [users, setUsers] = useState([
     {
       id: 1,
       name: "Ayşe Demir",
@@ -107,7 +99,64 @@ const AdminPanel = () => {
       role: "Premium",
       status: "Aktif",
     },
+  ]);
+
+  const stats = [
+    { title: "Toplam Kullanıcı", value: "1,234", change: "+12%" },
+    { title: "Aylık Gelir", value: "₺45,678", change: "+8%" },
+    { title: "Aktif Denemeler", value: "89", change: "+23%" },
+    { title: "Tamamlanan Analizler", value: "456", change: "+15%" },
   ];
+
+  const revenueData = [
+    { month: "Ocak", revenue: 25000, target: 30000 },
+    { month: "Şubat", revenue: 28000, target: 32000 },
+    { month: "Mart", revenue: 35000, target: 38000 },
+    { month: "Nisan", revenue: 42000, target: 40000 },
+    { month: "Mayıs", revenue: 38000, target: 42000 },
+    { month: "Haziran", revenue: 45000, target: 48000 },
+  ];
+
+  const userActivityData = [
+    { day: "Pzt", users: 120, tryons: 85 },
+    { day: "Sal", users: 145, tryons: 102 },
+    { day: "Çar", users: 165, tryons: 118 },
+    { day: "Per", users: 180, tryons: 135 },
+    { day: "Cum", users: 195, tryons: 145 },
+    { day: "Cmt", users: 210, tryons: 168 },
+    { day: "Paz", users: 155, tryons: 125 },
+  ];
+
+  const handleEditUser = (user) => {
+    setEditingUser(user);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleSaveUser = () => {
+    if (editingUser) {
+      setUsers(
+        users.map((user) => (user.id === editingUser.id ? editingUser : user))
+      );
+      setIsEditDialogOpen(false);
+      setEditingUser(null);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditDialogOpen(false);
+    setEditingUser(null);
+  };
+
+  const handleInputChange = (field, value) => {
+    if (editingUser) {
+      setEditingUser({
+        ...editingUser,
+        [field]: value,
+      });
+    }
+  };
+
+  const recentUsers = users;
 
   const recentOrders = [
     {
@@ -151,242 +200,39 @@ const AdminPanel = () => {
       case "İptal":
         return "bg-red-100 text-red-800";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-400 text-gray-800";
     }
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      {/* Başlık */}
-      <header className="bg-black border-b border-gray-800">
-        <div className="px-3 sm:px-6 py-3 sm:py-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-lg sm:text-2xl font-bold text-white">
-              NamıkAI Admin
-            </h1>
-            <div className="flex items-center space-x-2 sm:space-x-4">
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white text-xs sm:text-sm px-2 sm:px-3"
-              >
-                <span className="hidden sm:inline">Ayarlar</span>
-                <Settings className="sm:hidden w-4 h-4" />
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="relative h-8 w-8 rounded-sm hover:bg-gray-800"
-                  >
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src="/avatars/01.png" alt="@admin" />
-                      <AvatarFallback className="bg-gray-700 text-white">
-                        AD
-                      </AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  className="w-56 bg-gray-900 border-gray-700 text-white"
-                  align="end"
-                  forceMount
-                >
-                  <DropdownMenuItem className="hover:bg-gray-800">
-                    Profil
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="hover:bg-gray-800">
-                    Hesap Ayarları
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="hover:bg-gray-800">
-                    Çıkış Yap
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Navbar */}
-      <nav className="bg-black border-b border-gray-800">
-        <div className="px-3 sm:px-6">
-          <div className="flex space-x-2 sm:space-x-8 overflow-x-auto">
-            {["dashboard", "users", "orders", "analytics"].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`py-3 sm:py-4 px-2 sm:px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap ${
-                  activeTab === tab
-                    ? "border-white text-white"
-                    : "border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-600"
-                }`}
-              >
-                {tab === "dashboard" && (
-                  <>
-                    <BarChart3 className="sm:hidden w-4 h-4" />
-                    <span className="hidden sm:inline">Dashboard</span>
-                  </>
-                )}
-                {tab === "users" && (
-                  <>
-                    <Users className="sm:hidden w-4 h-4" />
-                    <span className="hidden sm:inline">Kullanıcılar</span>
-                  </>
-                )}
-                {tab === "orders" && (
-                  <>
-                    <Package className="sm:hidden w-4 h-4" />
-                    <span className="hidden sm:inline">Siparişler</span>
-                  </>
-                )}
-                {tab === "analytics" && (
-                  <>
-                    <TrendingUp className="sm:hidden w-4 h-4" />
-                    <span className="hidden sm:inline">Analitik</span>
-                  </>
-                )}
-              </button>
+    <div className="min-h-screen bg-gray-900 text-gray-100">
+      <main>
+        {/* Dashboard */}
+        <section className="mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {stats.map((stat, idx) => (
+              <Card key={idx} className="bg-gray-800 border border-gray-700 shadow-lg">
+                <CardHeader className="p-3 sm:p-6">
+                  <CardTitle className="text-white text-sm sm:text-base">
+                    {stat.title}
+                  </CardTitle>
+                  <CardDescription className="text-gray-400 text-xs sm:text-sm">
+                    {stat.value}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-3 sm:p-6 pt-0">
+                  <span className="text-green-500 text-xs font-semibold">
+                    {stat.change}
+                  </span>
+                </CardContent>
+              </Card>
             ))}
           </div>
-        </div>
-      </nav>
+        </section>
 
-      {/* Ana İçerik */}
-      <main className="px-3 sm:px-6 py-4 sm:py-8">
-        {activeTab === "dashboard" && (
-          <div className="space-y-6 sm:space-y-8">
-            {/* İstatistik Kartları */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-              {stats.map((stat, index) => (
-                <Card key={index} className="bg-gray-950 border-gray-800">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 sm:p-6">
-                    <CardTitle className="text-xs sm:text-sm font-medium text-gray-200">
-                      {stat.title}
-                    </CardTitle>
-                    <Badge
-                      variant="secondary"
-                      className="text-xs bg-gray-800 text-gray-300 hidden sm:inline-flex"
-                    >
-                      {stat.change}
-                    </Badge>
-                  </CardHeader>
-                  <CardContent className="p-3 sm:p-6 pt-0">
-                    <div className="text-lg sm:text-2xl font-bold text-white">
-                      {stat.value}
-                    </div>
-                    <div className="text-xs text-green-400 mt-1 sm:hidden">
-                      {stat.change}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            {/* Son Aktiviteler */}
-            <div className="grid grid-cols-1 gap-6">
-              {/* Son Kullanıcılar */}
-              <Card className="bg-gray-950 border-gray-800">
-                <CardHeader className="p-3 sm:p-6">
-                  <CardTitle className="text-white text-sm sm:text-base">
-                    Son Kullanıcılar
-                  </CardTitle>
-                  <CardDescription className="text-gray-400 text-xs sm:text-sm">
-                    Sisteme yeni kayıt olan kullanıcılar
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="p-3 sm:p-6 pt-0">
-                  <div className="space-y-3 sm:space-y-4">
-                    {recentUsers.map((user) => (
-                      <div
-                        key={user.id}
-                        className="flex items-center justify-between p-2 sm:p-3 rounded-sm bg-gray-800 hover:bg-gray-700 transition-colors"
-                      >
-                        <div className="flex items-center space-x-2 sm:space-x-4 min-w-0 flex-1">
-                          <Avatar className="h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0">
-                            <AvatarFallback className="bg-gray-700 text-white text-xs sm:text-sm">
-                              {user.name
-                                .split(" ")
-                                .map((n) => n[0])
-                                .join("")}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-xs sm:text-sm font-medium text-white truncate">
-                              {user.name}
-                            </p>
-                            <p className="text-xs text-gray-400 truncate">
-                              {user.email}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex flex-col sm:flex-row items-end sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 flex-shrink-0">
-                          <Badge
-                            variant="outline"
-                            className="text-xs border-gray-600 text-gray-300 hidden sm:inline-flex"
-                          >
-                            {user.role}
-                          </Badge>
-                          <Badge
-                            className={`text-xs ${getStatusColor(user.status)}`}
-                          >
-                            {user.status}
-                          </Badge>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Son Siparişler */}
-              <Card className="bg-gray-950 border-gray-800">
-                <CardHeader className="p-3 sm:p-6">
-                  <CardTitle className="text-white text-sm sm:text-base">
-                    Son Siparişler
-                  </CardTitle>
-                  <CardDescription className="text-gray-400 text-xs sm:text-sm">
-                    En son yapılan siparişler
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="p-3 sm:p-6 pt-0">
-                  <div className="space-y-3 sm:space-y-4">
-                    {recentOrders.map((order) => (
-                      <div
-                        key={order.id}
-                        className="flex items-center justify-between p-2 sm:p-3 rounded-sm bg-gray-800 hover:bg-gray-700 transition-colors"
-                      >
-                        <div className="min-w-0 flex-1">
-                          <p className="text-xs sm:text-sm font-medium text-white">
-                            {order.id}
-                          </p>
-                          <p className="text-xs text-gray-400 truncate">
-                            {order.customer}
-                          </p>
-                        </div>
-                        <div className="flex flex-col items-end space-y-1 flex-shrink-0">
-                          <p className="text-xs sm:text-sm font-medium text-white">
-                            {order.amount}
-                          </p>
-                          <Badge
-                            className={`text-xs ${getStatusColor(
-                              order.status
-                            )}`}
-                          >
-                            {order.status}
-                          </Badge>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        )}
-
-        {activeTab === "users" && (
-          <Card className="bg-gray-950 border-gray-800">
+        {/* Users */}
+        <section className="mb-8">
+          <Card className="bg-gray-800 border border-gray-700 shadow-lg">
             <CardHeader className="p-3 sm:p-6">
               <CardTitle className="text-white text-sm sm:text-base">
                 Kullanıcı Yönetimi
@@ -402,11 +248,11 @@ const AdminPanel = () => {
                   {recentUsers.map((user) => (
                     <div
                       key={user.id}
-                      className="bg-gray-800 rounded-sm p-3 space-y-2"
+                      className="bg-gray-700 rounded-sm p-3 space-y-2"
                     >
                       <div className="flex items-center space-x-3">
                         <Avatar className="h-8 w-8">
-                          <AvatarFallback className="bg-gray-700 text-white text-xs">
+                          <AvatarFallback className="bg-gray-600 text-white text-xs">
                             {user.name
                               .split(" ")
                               .map((n) => n[0])
@@ -426,7 +272,7 @@ const AdminPanel = () => {
                         <div className="flex space-x-2">
                           <Badge
                             variant="outline"
-                            className="text-xs border-gray-600 text-gray-300"
+                            className="text-xs border-gray-600 text-gray-400"
                           >
                             {user.role}
                           </Badge>
@@ -440,7 +286,8 @@ const AdminPanel = () => {
                           <Button
                             size="sm"
                             variant="outline"
-                            className="border-gray-600 text-gray-300 hover:bg-gray-700 text-xs px-2"
+                            className="border-gray-600 text-gray-400 hover:bg-gray-700 text-xs px-2"
+                            onClick={() => handleEditUser(user)}
                           >
                             <Edit className="w-3 h-3" />
                           </Button>
@@ -462,23 +309,23 @@ const AdminPanel = () => {
               <div className="hidden sm:block">
                 <Table>
                   <TableHeader>
-                    <TableRow className="border-gray-800">
-                      <TableHead className="text-gray-300">Kullanıcı</TableHead>
-                      <TableHead className="text-gray-300">Email</TableHead>
-                      <TableHead className="text-gray-300">Rol</TableHead>
-                      <TableHead className="text-gray-300">Durum</TableHead>
-                      <TableHead className="text-gray-300">İşlemler</TableHead>
+                    <TableRow className="border-gray-700">
+                      <TableHead className="text-gray-400">Kullanıcı</TableHead>
+                      <TableHead className="text-gray-400">Email</TableHead>
+                      <TableHead className="text-gray-400">Rol</TableHead>
+                      <TableHead className="text-gray-400">Durum</TableHead>
+                      <TableHead className="text-gray-400">İşlemler</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {recentUsers.map((user) => (
                       <TableRow
                         key={user.id}
-                        className="border-gray-800 hover:bg-gray-800"
+                        className="border-gray-700 hover:bg-gray-700 text-gray-100"
                       >
                         <TableCell className="flex items-center space-x-3">
                           <Avatar>
-                            <AvatarFallback className="bg-gray-700 text-white">
+                            <AvatarFallback className="bg-gray-600 text-white">
                               {user.name
                                 .split(" ")
                                 .map((n) => n[0])
@@ -489,13 +336,13 @@ const AdminPanel = () => {
                             {user.name}
                           </span>
                         </TableCell>
-                        <TableCell className="text-gray-300">
+                        <TableCell className="text-gray-400">
                           {user.email}
                         </TableCell>
                         <TableCell>
                           <Badge
                             variant="outline"
-                            className="border-gray-600 text-gray-300"
+                            className="border-gray-600 text-gray-400"
                           >
                             {user.role}
                           </Badge>
@@ -510,7 +357,8 @@ const AdminPanel = () => {
                             <Button
                               size="sm"
                               variant="outline"
-                              className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                              className="border-gray-600 text-gray-400 hover:bg-gray-700"
+                              onClick={() => handleEditUser(user)}
                             >
                               Düzenle
                             </Button>
@@ -530,10 +378,11 @@ const AdminPanel = () => {
               </div>
             </CardContent>
           </Card>
-        )}
+        </section>
 
-        {activeTab === "orders" && (
-          <Card className="bg-gray-950 border-gray-800">
+        {/* Orders */}
+        <section className="mb-8">
+          <Card className="bg-gray-800 border border-gray-700 shadow-lg">
             <CardHeader className="p-3 sm:p-6">
               <CardTitle className="text-white text-sm sm:text-base">
                 Sipariş Yönetimi
@@ -549,7 +398,7 @@ const AdminPanel = () => {
                   {recentOrders.map((order) => (
                     <div
                       key={order.id}
-                      className="bg-gray-800 rounded-sm p-3 space-y-2"
+                      className="bg-gray-700 rounded-sm p-3 space-y-2"
                     >
                       <div className="flex items-center justify-between">
                         <div>
@@ -577,7 +426,7 @@ const AdminPanel = () => {
                           <Button
                             size="sm"
                             variant="outline"
-                            className="border-gray-600 text-gray-300 hover:bg-gray-700 text-xs px-2"
+                            className="border-gray-600 text-gray-400 hover:bg-gray-700 text-xs px-2"
                           >
                             <Eye className="w-3 h-3" />
                           </Button>
@@ -598,27 +447,27 @@ const AdminPanel = () => {
               <div className="hidden sm:block">
                 <Table>
                   <TableHeader>
-                    <TableRow className="border-gray-800">
-                      <TableHead className="text-gray-300">
+                    <TableRow className="border-gray-700">
+                      <TableHead className="text-gray-400">
                         Sipariş ID
                       </TableHead>
-                      <TableHead className="text-gray-300">Müşteri</TableHead>
-                      <TableHead className="text-gray-300">Tutar</TableHead>
-                      <TableHead className="text-gray-300">Durum</TableHead>
-                      <TableHead className="text-gray-300">Tarih</TableHead>
-                      <TableHead className="text-gray-300">İşlemler</TableHead>
+                      <TableHead className="text-gray-400">Müşteri</TableHead>
+                      <TableHead className="text-gray-400">Tutar</TableHead>
+                      <TableHead className="text-gray-400">Durum</TableHead>
+                      <TableHead className="text-gray-400">Tarih</TableHead>
+                      <TableHead className="text-gray-400">İşlemler</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {recentOrders.map((order) => (
                       <TableRow
                         key={order.id}
-                        className="border-gray-800 hover:bg-gray-800"
+                        className="border-gray-700 hover:bg-gray-700 text-gray-100"
                       >
                         <TableCell className="font-medium text-white">
                           {order.id}
                         </TableCell>
-                        <TableCell className="text-gray-300">
+                        <TableCell className="text-gray-400">
                           {order.customer}
                         </TableCell>
                         <TableCell className="font-medium text-white">
@@ -629,7 +478,7 @@ const AdminPanel = () => {
                             {order.status}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-gray-300">
+                        <TableCell className="text-gray-400">
                           {order.date}
                         </TableCell>
                         <TableCell>
@@ -637,7 +486,7 @@ const AdminPanel = () => {
                             <Button
                               size="sm"
                               variant="outline"
-                              className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                              className="border-gray-600 text-gray-400 hover:bg-gray-700"
                             >
                               Görüntüle
                             </Button>
@@ -656,11 +505,12 @@ const AdminPanel = () => {
               </div>
             </CardContent>
           </Card>
-        )}
+        </section>
 
-        {activeTab === "analytics" && (
+        {/* Analytics */}
+        <section className="mb-8">
           <div className="grid grid-cols-1 gap-6">
-            <Card className="bg-gray-950 border-gray-800">
+            <Card className="bg-gray-800 border border-gray-700 shadow-lg">
               <CardHeader className="p-3 sm:p-6">
                 <CardTitle className="text-white text-sm sm:text-base">
                   Gelir Analizi
@@ -718,7 +568,7 @@ const AdminPanel = () => {
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-950 border-gray-800">
+            <Card className="bg-gray-800 border border-gray-700 shadow-lg">
               <CardHeader className="p-3 sm:p-6">
                 <CardTitle className="text-white text-sm sm:text-base">
                   Kullanıcı Aktivitesi
@@ -770,11 +620,9 @@ const AdminPanel = () => {
               </CardContent>
             </Card>
           </div>
-        )}
+        </section>
       </main>
-
-      {/* Alt Bilgi */}
-      <footer className="bg-gray-950 border-t border-gray-800 mt-8">
+      <footer className="bg-gray-900 border-t border-gray-700 mt-8">
         <div className="px-3 sm:px-6 py-6 sm:py-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 sm:gap-8">
             {/* Şirket Bilgileri */}
@@ -787,13 +635,13 @@ const AdminPanel = () => {
                 seviyeye taşıyın.
               </p>
               <div className="flex space-x-3">
-                <div className="w-8 h-8 bg-gray-800 rounded-sm flex items-center justify-center hover:bg-gray-700 cursor-pointer transition-colors">
+                <div className="w-8 h-8 bg-gray-700 rounded-sm flex items-center justify-center hover:bg-gray-600 cursor-pointer transition-colors">
                   <Smartphone className="w-4 h-4 text-gray-400" />
                 </div>
-                <div className="w-8 h-8 bg-gray-800 rounded-sm flex items-center justify-center hover:bg-gray-700 cursor-pointer transition-colors">
+                <div className="w-8 h-8 bg-gray-700 rounded-sm flex items-center justify-center hover:bg-gray-600 cursor-pointer transition-colors">
                   <Mail className="w-4 h-4 text-gray-400" />
                 </div>
-                <div className="w-8 h-8 bg-gray-800 rounded-sm flex items-center justify-center hover:bg-gray-700 cursor-pointer transition-colors">
+                <div className="w-8 h-8 bg-gray-700 rounded-sm flex items-center justify-center hover:bg-gray-600 cursor-pointer transition-colors">
                   <Globe className="w-4 h-4 text-gray-400" />
                 </div>
               </div>
@@ -924,10 +772,10 @@ const AdminPanel = () => {
           </div>
 
           {/* Alt Çubuk */}
-          <div className="border-t border-gray-800 mt-6 sm:mt-8 pt-6 sm:pt-8">
+          <div className="border-t border-gray-700 mt-6 sm:mt-8 pt-6 sm:pt-8">
             <div className="flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0">
               <p className="text-gray-400 text-xs sm:text-sm">
-                © 2025 Namık AI Studio. Tüm hakları saklıdır.
+                2025 Namık AI Studio. Tüm hakları saklıdır.
               </p>
               <div className="flex items-center space-x-4 text-xs sm:text-sm">
                 <span className="text-gray-400">Powered by</span>
@@ -939,6 +787,108 @@ const AdminPanel = () => {
           </div>
         </div>
       </footer>
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="bg-gray-800 border border-gray-700 text-gray-100">
+          <DialogHeader>
+            <DialogTitle className="text-white">
+              {editingUser ? "Kullanıcıyı Düzenle" : "Kullanıcı Ekle"}
+            </DialogTitle>
+            <DialogDescription className="text-gray-400">
+              {editingUser
+                ? "Kullanıcı bilgilerini güncelleyin."
+                : "Yeni bir kullanıcı oluşturun."}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <Label htmlFor="name" className="text-gray-300">
+                İsim
+              </Label>
+              <Input
+                id="name"
+                value={editingUser?.name || ""}
+                onValueChange={(value) => handleInputChange("name", value)}
+                className="bg-gray-800 text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Kullanıcı adı"
+              />
+            </div>
+            <div>
+              <Label htmlFor="email" className="text-gray-300">
+                Email
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                value={editingUser?.email || ""}
+                onValueChange={(value) => handleInputChange("email", value)}
+                className="bg-gray-800 text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Kullanıcı emaili"
+              />
+            </div>
+            <div>
+              <Label htmlFor="role" className="text-gray-300">
+                Rol
+              </Label>
+              <Select
+                id="role"
+                value={editingUser?.role || "Basic"}
+                onValueChange={(value) => handleInputChange("role", value)}
+                className="bg-gray-800 text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Rol seçin" />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-900 border-gray-700">
+                  <SelectItem value="Basic" className="text-gray-300">
+                    Temel
+                  </SelectItem>
+                  <SelectItem value="Premium" className="text-gray-300">
+                    Premium
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="status" className="text-gray-300">
+                Durum
+              </Label>
+              <Select
+                id="status"
+                value={editingUser?.status || "Aktif"}
+                onValueChange={(value) => handleInputChange("status", value)}
+                className="bg-gray-800 text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Durum seçin" />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-900 border-gray-700">
+                  <SelectItem value="Aktif" className="text-gray-300">
+                    Aktif
+                  </SelectItem>
+                  <SelectItem value="Pasif" className="text-gray-300">
+                    Pasif
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="flex justify-end gap-2 mt-4">
+            <Button
+              variant="outline"
+              className="border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white"
+              onClick={handleCancelEdit}
+            >
+              İptal
+            </Button>
+            <Button
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+              onClick={handleSaveUser}
+            >
+              {editingUser ? "Kaydet" : "Oluştur"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
