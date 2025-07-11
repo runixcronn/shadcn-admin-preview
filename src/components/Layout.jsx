@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import React from "react";
-import { Menu, X, ChevronLeft, ChevronRight, User } from "lucide-react";
+import { Menu, ChevronLeft, ChevronRight, User } from "lucide-react";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
@@ -20,21 +20,11 @@ import {
 import {
   Settings,
   BarChart3,
-  Users,
+  Users as UsersIcon,
   Package,
   TrendingUp,
-  Smartphone,
-  Mail,
-  Globe,
   LogOut,
 } from "lucide-react";
-import {
-  SidebarProvider,
-  Sidebar,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarTrigger,
-} from "./ui/sidebar";
 
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -46,7 +36,7 @@ const Layout = ({ children }) => {
     {
       path: "/users",
       label: "Kullanıcılar",
-      icon: <Users className="w-4 h-4" />,
+      icon: <UsersIcon className="w-4 h-4" />,
     },
     {
       path: "/orders",
@@ -61,104 +51,109 @@ const Layout = ({ children }) => {
   ];
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen bg-black text-white flex flex-col">
-        {/* Mobile Header */}
-        <div className="md:hidden bg-gray-950 border-b border-gray-800 p-4 flex items-center justify-between fixed top-0 left-0 right-0 z-50">
-          <div className="flex items-center space-x-4">
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-gray-300 hover:text-white hover:bg-transparent">
-                  <Menu className="w-6 h-6" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="w-[300px] bg-gray-900 border-r border-gray-800 p-0">
-                <SheetHeader className="p-4 border-b border-gray-800">
-                  <SheetTitle className="text-white text-left">Menü</SheetTitle>
-                </SheetHeader>
-                <div className="p-2">
-                  <SidebarMenu>
-                    {navigationItems.map(item => (
-                      <SidebarMenuButton 
-                        key={item.path} 
-                        asChild 
-                        isActive={currentPath === item.path}
-                      >
-                        <Link to={item.path} className="flex items-center gap-3 p-3 hover:bg-gray-800 text-gray-100 rounded-md">
-                          {item.icon}
-                          <span>{item.label}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    ))}
-                  </SidebarMenu>
-                </div>
-              </SheetContent>
-            </Sheet>
-            <h1 className="text-xl font-bold">NamıkAI Admin</h1>
-          </div>
-          <div className="flex items-center">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="rounded-full focus:outline-none">
-                  <Avatar className="size-8 cursor-pointer">
-                    <AvatarImage src="/avatars/01.png" className="rounded-none" alt="@admin" />
-                    <AvatarFallback>AD</AvatarFallback>
-                  </Avatar>
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-48 bg-gray-900 border-gray-700 text-gray-200">
-                <DropdownMenuItem className="flex items-center cursor-pointer px-3 py-2 text-sm hover:bg-gray-800 focus:bg-gray-800 focus:text-white">
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Ayarlar</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="flex items-center cursor-pointer px-3 py-2 text-sm hover:bg-gray-800 focus:bg-gray-800 focus:text-white text-red-400 hover:text-red-300">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Çıkış Yap</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+    <div className="min-h-screen bg-gray-900 text-white flex flex-col">
+      {/* Mobil Header */}
+      <div className="md:hidden bg-gray-950 border-b border-gray-800 p-4 flex items-center justify-between fixed top-0 left-0 right-0 z-50 h-16">
+        <div className="flex items-center space-x-4">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="text-gray-300 hover:text-white hover:bg-transparent">
+                <Menu className="w-6 h-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[280px] bg-gray-900 border-r border-gray-800 p-0">
+              <SheetHeader className="p-4 border-b border-gray-800">
+                <SheetTitle className="text-white text-left">Menü</SheetTitle>
+              </SheetHeader>
+              <div className="p-2">
+                {navigationItems.map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`flex items-center gap-3 p-3 rounded-md ${
+                      currentPath === item.path
+                        ? "bg-gray-800 text-white"
+                        : "text-gray-300 hover:bg-gray-800 hover:text-white"
+                    }`}
+                  >
+                    {item.icon}
+                    <span>{item.label}</span>
+                  </Link>
+                ))}
+              </div>
+            </SheetContent>
+          </Sheet>
+          <h1 className="text-xl font-bold">NamıkAI Admin</h1>
         </div>
+        <div className="flex items-center">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="rounded-full focus:outline-none">
+                <Avatar className="size-8 cursor-pointer">
+                  <AvatarImage src="/avatars/01.png" className="rounded-none" alt="@admin" />
+                  <AvatarFallback>AD</AvatarFallback>
+                </Avatar>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-48 bg-gray-900 border-gray-700 text-gray-200">
+              <DropdownMenuItem className="flex items-center cursor-pointer px-3 py-2 text-sm hover:bg-gray-800 focus:bg-gray-800 focus:text-white">
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Ayarlar</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="flex items-center cursor-pointer px-3 py-2 text-sm hover:bg-gray-800 focus:bg-gray-800 focus:text-white text-red-400 hover:text-red-300">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Çıkış Yap</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
 
-        <div className="flex flex-1 overflow-hidden pt-16 md:pt-0 relative">
-          {/* Desktop Sidebar */}
-          <div className={`hidden md:flex flex-col fixed top-0 left-0 h-screen transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-64'} bg-gray-950 border-r border-gray-800 z-40`}>
-            <div className="overflow-y-auto h-full flex flex-col">
-              <div className="p-4 flex-1">
-              <div className={`flex items-center mb-6 ${isCollapsed ? 'justify-center' : 'justify-between px-2'}`}>
-                {/* NamıkAI yazı logo - sadece geniş durumda göster */}
+      <div className="flex flex-1 pt-16 md:pt-0">
+        {/* Masaüstü Sidebar */}
+        <div 
+          className={`hidden md:flex flex-col fixed top-0 left-0 h-screen transition-all duration-300 ${
+            isCollapsed ? 'w-20' : 'w-64'
+          } bg-gray-950 border-r border-gray-800 z-30`}
+        >
+          <div className="overflow-y-auto h-full flex flex-col">
+            <div className="p-4 flex-1">
+              <div className={`flex items-center mb-6 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
                 {!isCollapsed && <h1 className="text-xl font-bold text-white">NamıkAI</h1>}
                 <Button
                   variant="ghost"
                   size="icon"
-                  className={`h-8 w-8 text-gray-400 hover:bg-gray-800 hover:text-white ${isCollapsed ? 'mx-auto' : ''}`}
+                  className="h-8 w-8 text-gray-400 hover:bg-gray-800 hover:text-white"
                   onClick={() => setIsCollapsed(!isCollapsed)}
                 >
-                  {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+                  {isCollapsed ? (
+                    <ChevronRight className="h-4 w-4" />
+                  ) : (
+                    <ChevronLeft className="h-4 w-4" />
+                  )}
                 </Button>
               </div>
-              
-              <SidebarMenu>
+
+              <div className="space-y-1">
                 {navigationItems.map((item) => (
-                  <SidebarMenuButton
+                  <Link
                     key={item.path}
-                    asChild
-                    isActive={currentPath === item.path}
-                    className={`${isCollapsed ? 'justify-center' : ''}`}
+                    to={item.path}
+                    className={`flex items-center gap-3 p-3 rounded-md ${
+                      currentPath === item.path
+                        ? 'bg-gray-800 text-white'
+                        : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                    } ${isCollapsed ? 'justify-center' : ''}`}
+                    title={isCollapsed ? item.label : ''}
                   >
-                    <Link
-                      to={item.path}
-                      className={`flex items-center gap-3 p-3 hover:bg-gray-800 text-gray-100 rounded-md ${isCollapsed ? 'justify-center px-0' : ''}`}
-                      title={isCollapsed ? item.label : ''}
-                    >
-                      <span className="flex-shrink-0">{item.icon}</span>
-                      {!isCollapsed && <span className="truncate">{item.label}</span>}
-                    </Link>
-                  </SidebarMenuButton>
+                    <span className="flex-shrink-0">{item.icon}</span>
+                    {!isCollapsed && <span className="truncate">{item.label}</span>}
+                  </Link>
                 ))}
-              </SidebarMenu>
+              </div>
             </div>
-            <div className={`p-4 border-t border-gray-800 ${isCollapsed ? 'flex justify-center px-0' : ''}`}>
+
+            <div className={`p-4 border-t border-gray-800 ${isCollapsed ? 'flex justify-center' : ''}`}>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <div className={`flex items-center ${!isCollapsed ? 'w-full' : 'justify-center'}`}>
@@ -199,48 +194,36 @@ const Layout = ({ children }) => {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              </div>
             </div>
           </div>
+        </div>
 
-          {/* Main Content */}
-          <div className="flex-1 flex flex-col min-h-0 w-full transition-all duration-300" style={{ paddingLeft: isCollapsed ? '5rem' : '16rem' }}>
-            <main className="flex-1 overflow-auto px-3 sm:px-6 py-4 sm:py-8">
+        {/* Main */}
+        <div 
+          className={`flex-1 flex flex-col min-h-0 w-full transition-all duration-300 ${
+            isCollapsed ? 'md:ml-20' : 'md:ml-64'
+          }`}
+        >
+          <main className="flex-1 overflow-auto p-4 md:p-6 w-full">
+            <div className="max-w-full overflow-x-hidden">
               {children}
-            </main>
-          {/* Alt Bilgi */}
-          <footer className="bg-gray-950 border-t border-gray-800 mt-8">
-            <div className="px-3 sm:px-6 py-6 sm:py-8">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 sm:gap-8">
-                <div className="md:col-span-1">
-                  <h3 className="text-white font-semibold text-sm sm:text-base mb-3">
-                    Namık AI Studio
-                  </h3>
-                  <p className="text-gray-400 text-xs sm:text-sm mb-4">
-                    Yapay zeka teknolojisi ile makyaj deneyiminizi bir sonraki
-                    seviyeye taşıyın.
-                  </p>
-                  <div className="flex space-x-3">
-                    <div className="w-8 h-8 bg-gray-800 rounded-sm flex items-center justify-center hover:bg-gray-700 cursor-pointer transition-colors">
-                      <Smartphone className="w-4 h-4 text-gray-400" />
-                    </div>
-                    <div className="w-8 h-8 bg-gray-800 rounded-sm flex items-center justify-center hover:bg-gray-700 cursor-pointer transition-colors">
-                      <Mail className="w-4 h-4 text-gray-400" />
-                    </div>
-                    <div className="w-8 h-8 bg-gray-800 rounded-sm flex items-center justify-center hover:bg-gray-700 cursor-pointer transition-colors">
-                      <Globe className="w-4 h-4 text-gray-400" />
-                    </div>
-                  </div>
-                </div>
+            </div>
+          </main>
+
+          {/* Footer */}
+          <footer className="bg-gray-950 border-t border-gray-800 mt-auto">
+            <div className="px-4 sm:px-6 py-6">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div>
-                  <h3 className="text-white font-semibold text-sm sm:text-base mb-3">
-                    Hizmetler
-                  </h3>
-                  <ul className="space-y-2 text-xs sm:text-sm">
+                  <h3 className="text-white font-semibold mb-4">NamıkAI</h3>
+                  <p className="text-gray-400 text-sm mb-3">
+                    Yapay zeka destekli güçlü yönetim paneli çözümü.
+                  </p>
+                  <ul className="space-y-2">
                     <li>
                       <a
                         href="#"
-                        className="text-gray-400 hover:text-white transition-colors"
+                        className="text-gray-400 hover:text-white text-sm"
                       >
                         AI Makyaj Analizi
                       </a>
@@ -248,25 +231,9 @@ const Layout = ({ children }) => {
                     <li>
                       <a
                         href="#"
-                        className="text-gray-400 hover:text-white transition-colors"
+                        className="text-gray-400 hover:text-white text-sm"
                       >
                         Sanal Makyaj Denemesi
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="#"
-                        className="text-gray-400 hover:text-white transition-colors"
-                      >
-                        Renk Eşleştirme
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="#"
-                        className="text-gray-400 hover:text-white transition-colors"
-                      >
-                        Cilt Tonu Analizi
                       </a>
                     </li>
                   </ul>
@@ -365,10 +332,9 @@ const Layout = ({ children }) => {
               </div>
             </div>
           </footer>
-          </div>
         </div>
       </div>
-    </SidebarProvider>
+    </div>
   );
 };
 
